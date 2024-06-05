@@ -9,5 +9,5 @@ let handler = async (m, { conn, usedPrefix, command }) => {
 }
 handler.help = ['toimg2']
 handler.tags = ['sticker']
-handler.command = /^(toimg2)$/i
+handler.command = /^(ملصق)$/i
 export default handler
