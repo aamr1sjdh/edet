@@ -20,7 +20,7 @@ m.reply('eror')
 }
 handler.help = ['tiktoksearch']
 handler.tags = ['search']
-handler.command=/^(tok)$/i
+handler.command=/^(تيك_بحث)$/i
 export default handler
 
 const num = ['0','1','2','3','4','5','6','7','8','9']
