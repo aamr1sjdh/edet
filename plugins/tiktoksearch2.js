@@ -19,7 +19,7 @@ const handler = async (m, { conn, text, usedPrefix, command }) => {
 };
 
 handler.help = ['tiktoksearch2'];
-handler.command = /^(tik)$/i;
+handler.command = /^(تيك_بحث)$/i;
 handler.tags = ['search'];
 
 
