@@ -1,195 +1,81 @@
-import axios from "axios"
-import fetch from "node-fetch"
-import cheerio from "cheerio"
-import got from "got"
-import fg from "api-dylux"
-import { fetchVideo } from "@prevter/tiktok-scraper"
-import { Tiktok } from "@xct007/tiktok-scraper"
+import fg from 'api-dylux';
+import axios from 'axios';
+import cheerio from 'cheerio';
+import {tiktok} from '@xct007/frieren-scraper';
+import {generateWAMessageFromContent} from '@whiskeysockets/baileys';
+import {tiktokdl} from '@bochilteam/scraper';
 
-export async function before(m) {
-const regex = /https:\/\/vt\.tiktok\.com\/[A-Za-z0-9]+/g;
-const matches = (m.text.trim()).match(regex);
-const spas = "                ";
-if (!matches) return false;
-await m.reply(wait);
-try {
-                const videoX = await Tiktok(matches[0]);
 
-    let XctCap = `${spas}*[ T I K T O K ]*
 
-${getUserProfileInfo(videoX)}
-\n${spas}*[ V1 ]*`
-                await conn.sendFile(m.chat, videoX.download.nowm || giflogo , "", XctCap, m)
-            } catch (e) {
-                try {
-                const video = await fetchVideo(matches[0]);
+const CFROSAPI = global.APIs.CFROSAPI;
+const handler = async (m, {conn, text, args, usedPrefix, command}) => {
+  const datas = global
+  const idioma = datas.db.data.users[m.sender].language
+  const _translate = JSON.parse(fs.readFileSync(`./language/${idioma}.json`))
+  const tradutor = _translate.plugins.descargas_tiktok
 
-                const buffer = await video.download({
-  progress: (p) => {
-    console.log(`Downloaded ${p.progress}% (${p.downloaded}/${p.total} bytes)`);
-  },
-});
-    let PrevCap = `${spas}*[ T I K T O K ]*
 
-${getVideoInfo(video)}
-\n${spas}*[ V2 ]*`
-                await conn.sendFile(m.chat, buffer || giflogo , "", PrevCap, m)
-            } catch (e) {
-                try {
-                let Fg = await fg.tiktok(matches[0])
-
-    let FgCap = `${spas}*[ T I K T O K ]*
-
-*Nickname:* ${Fg.nickname}
-*Unique ID:* ${Fg.unique_id}
-*Download Count:* ${Fg.download_count}
-*Duration:* ${Fg.duration}
-*Description:* ${Fg.description}\n${spas}*[ V3 ]*`
-                await conn.sendFile(m.chat, Fg.play || Fg.hdplay , "", FgCap, m)
-            } catch (e) {
-                try {
-                const god = await axios.get("https://godownloader.com/api/tiktok-no-watermark-free?url=" + matches[0] + "&key=godownloader.com")
-
-                let GoCap = `${spas}*[ T I K T O K ]*
-
-*Desc:* ${god.data.desc}
-\n${spas}*[ V4 ]*`
-                await conn.sendFile(m.chat, god.data.video_no_watermark, "", GoCap, m)
-            } catch (e) {
-                try {
-                let Scrap = await Tiktokdl(matches[0]);
-
-                let S = Scrap.result
-                let ScrapCap = `${spas}*「 T I K T O K 」*
-
-*📛 Author:* ${S.author.nickname}
-*📒 Title:* ${S.desc}
-\n${spas}*[ V5 ]*`
-                await conn.sendFile(m.chat, S.download.nowm, "", ScrapCap, m)
-            } catch (e) {
-                throw eror
-            }
-            }
-            }
-            }
-            }
-
-            }
-export const disabled = false
-            //@xct007/tiktok-scraper
-async function Tiktokdl(url) {
-    //async function tiktokdl(url) {
+  if (!text) throw `${tradutor.texto1} _${usedPrefix + command} https://vm.tiktok.com/ZM686Q4ER/_`;
+  if (!/(?:https:?\/{2})?(?:w{3}|vm|vt|t)?\.?tiktok.com\/([^\s&]+)/gi.test(text)) throw `${tradutor.texto2} _${usedPrefix + command} https://vm.tiktok.com/ZM686Q4ER/_`;
+  const texto = `${tradutor.texto3}`;
+  // let buttons = [{ buttonText: { displayText: '♫ 𝙰𝚄𝙳𝙸𝙾 ♫' }, buttonId: `${usedPrefix}tomp3` }]
+  try {
+    const aa = {quoted: m, userJid: conn.user.jid};
+    const prep = generateWAMessageFromContent(m.chat, {extendedTextMessage: {text: texto, contextInfo: {externalAdReply: {title: 'ᴛʜᴇ ᴍʏsᴛɪᴄ - ʙᴏᴛ', body: null, thumbnail: imagen1, sourceUrl: 'https://github.com/BrunoSobrino/TheMystic-Bot-MD'}, mentionedJid: [m.sender]}}}, aa);
+    await conn.relayMessage(m.chat, prep.message, {messageId: prep.key.id, mentions: [m.sender]});
+    const dataFn = await conn.getFile(`${CFROSAPI}/api/tiktokv2?url=${args[0]}`);
+    const desc1n = `${tradutor.texto4[0]} _${usedPrefix}tomp3_ ${tradutor.texto4[1]}`;
+    await conn.sendMessage(m.chat, {video: dataFn.data, caption: desc1n}, {quoted: m});
+  } catch (ee1) {
+  try {
+    //const aa = {quoted: m, userJid: conn.user.jid};
+    //const prep = generateWAMessageFromContent(m.chat, {extendedTextMessage: {text: texto, contextInfo: {externalAdReply: {title: 'ᴛʜᴇ ᴍʏsᴛɪᴄ - ʙᴏᴛ', body: null, thumbnail: imagen1, sourceUrl: 'https://github.com/BrunoSobrino/TheMystic-Bot-MD'}, mentionedJid: [m.sender]}}}, aa);
+    //await conn.relayMessage(m.chat, prep.message, {messageId: prep.key.id, mentions: [m.sender]});
+    const dataF = await tiktok.v1(args[0]);
+    // let desc1 =  `*𝙽𝙸𝙲𝙺𝙽𝙰𝙼𝙴:* ${dataF.nickname || 'Indefinido'}`
+    const desc1 = `${tradutor.texto5[0]} _${usedPrefix}tomp3_ ${tradutor.texto5[1]}`;
+    await conn.sendMessage(m.chat, {video: {url: dataF.play}, caption: desc1}, {quoted: m});
+  } catch (e1) {
     try {
-        function API_URL(aweme) {
-            return `https://api16-core-c-useast1a.tiktokv.com/aweme/v1/feed/?aweme_id=${aweme}&version_name=1.0.4&version_code=104&build_number=1.0.4&manifest_version_code=104&update_version_code=104&openudid=4dsoq34x808ocz3m&uuid=6320652962800978&_rticket=1671193816600&ts=1671193816&device_brand=POCO&device_type=surya&device_platform=android&resolution=1080*2179&dpi=440&os_version=12&os_api=31&carrier_region=US&sys_region=US%C2%AEion=US&app_name=TikMate%20Downloader&app_language=en&language=en&timezone_name=Western%20Indonesia%20Time&timezone_offset=25200&channel=googleplay&ac=wifi&mcc_mnc=&is_my_cn=0&aid=1180&ssmix=a&as=a1qwert123&cp=cbfhckdckkde1`
+      const tTiktok = await tiktokdlF(args[0]);
+      // let desc2 = `🔗 *Url:* ${tTiktok.video}`
+      const desc2 = `${tradutor.texto6[0]} _${usedPrefix}tomp3_ ${tradutor.texto6[1]}`;
+      await conn.sendMessage(m.chat, {video: {url: tTiktok.video}, caption: desc2}, {quoted: m});
+    } catch (e2) {
+      try {
+        const p = await fg.tiktok(args[0]);
+        // let te = `*𝚄𝚂𝙴𝚁𝙽𝙰𝙼𝙴:* ${p.author || 'Indefinido'}`
+        const te = `${tradutor.texto7[0]} _${usedPrefix}tomp3_ ${tradutor.texto7[1]}`;
+        await conn.sendMessage(m.chat, {video: {url: p.nowm}, caption: te}, {quoted: m});
+      } catch (e3) {
+        try {
+          const {author: {nickname}, video, description} = await tiktokdl(args[0]);
+          const url = video.no_watermark2 || video.no_watermark || 'https://tikcdn.net' + video.no_watermark_raw || video.no_watermark_hd;
+          // let cap = `*𝙽𝙸𝙲𝙺𝙽𝙰𝙼𝙴:* ${nickname || 'Indefinido'}`
+          const cap = `${tradutor.texto8[0]} _${usedPrefix}tomp3_ ${tradutor.texto8[1]}`;
+          await conn.sendMessage(m.chat, {video: {url: url}, caption: cap}, {quoted: m});
+        } catch {
+          throw `${tradutor.texto9}`;
+          }
         }
-        async function getAwemeId(url) {
-            // any :/
-            let result
-            const Konto1 = /video\/([\d|\+]+)?\/?/
-            const valid = url.match(Konto1)
-            if (valid) {
-                return valid[1]
-            } else {
-                try {
-                    const data = await got
-                        .get(url, {
-                            headers: {
-                                "Accept-Encoding": "deflate",
-                            },
-                            maxRedirects: 0,
-                        })
-                        .catch((e) => e.response.headers.location)
-                    const _url = data
-                    const _valid = _url.match(Konto1)
-                    if (_valid) {
-                        result = _valid[1]
-                    }
-                } catch (error) {
-                    // console.log(error)
-                    result = false
-                }
-            }
-            return result
-        }
-        const valid = await getAwemeId(url)
-        //if (!valid) return false // result = false
-        const data = await got
-            .get(API_URL(valid), {
-                headers: {
-                    "Accept-Encoding": "deflate",
-                    "User-Agent": "okhttp/3.14.9",
-                },
-            })
-            .catch((e) => e.response)
-        //if (!data) return false // result = false
-        const body = JSON.parse(data.body)
-        const obj = body.aweme_list.find((o) => o.aweme_id === valid)
-        const results = {
-            aweme_id: obj.aweme_id,
-            region: obj.region,
-            desc: obj.desc,
-            create_time: obj.create_time,
-            author: {
-                uid: obj.author.uid,
-                unique_id: obj.author.unique_id,
-                nickname: obj.author.nickname,
-                birthday: obj.author.birthday,
-            },
-            duration: obj.music.duration,
-            download: {
-                nowm: obj.video.play_addr.url_list[0],
-                wm: obj.video.download_addr.url_list[0],
-                music: obj.music.play_url.url_list[0],
-                music_info: {
-                    id: obj.music.id,
-                    title: obj.music.title,
-                    author: obj.music.author,
-                    is_original: obj.music.is_original,
-                    cover_hd: obj.music.cover_hd.url_list[0],
-                    cover_large: obj.music.cover_large.url_list[0],
-                    cover_medium: obj.music.cover_medium.url_list[0],
-                },
-            },
-        }
-        return {
-            status: true,
-            result: results //data.body //valid
-        }
-    } catch (e) {
-        return {
-            status: false,
-            result: e
-        }
+      }
     }
-}
+  }
+};
+handler.command = /^(tiktok|ttdl|tiktokdl|tiktoknowm|tt|ttnowm|tiktokaudio)$/i;
+export default handler;
 
-function getVideoInfo(video) {
-    return `Video description: ${video.description}\n` +
-           `🔗 URL: ${video.url}\n` +
-           `👤 Author: ${video.author}\n` +
-           `❤️ Likes: ${video.likes}\n` +
-           `💬 Comments: ${video.comments}\n` +
-           `🔁 Shares: ${video.shares}\n` +
-           `▶️ Plays: ${video.playCount}\n` +
-           `🎵 Music: ${video.music.name} - ${video.music.author}\n` +
-           `🖼️ Thumbnail URL: ${video.previewImageUrl}`;
-}
-
-function getEmojiCount(count) {
-  const emojis = ['👍', '❤️', '🔁', '💬', '🔥'];
-  return emojis[Math.floor(Math.random() * emojis.length)] + count.toLocaleString();
-}
-
-function getUserProfileInfo(tiktokData) {
-  const user = tiktokData.author;
-  const stats = tiktokData.statistics;
-
-  return `User Profile:
-🆔 Unique ID: ${user.uid}
-👤 Nickname: ${user.nickname}
-💬 Description: ${tiktokData.desc}
-👥 Comments: ${getEmojiCount(stats.comment_count)}
-👍 Likes: ${getEmojiCount(stats.digg_count)}
-🎵 Music: ${tiktokData.download.music_info.title}`;
+async function tiktokdlF(url) {
+  if (!/tiktok/.test(url)) return `${tradutor.texto10} _${usedPrefix + command} https://vm.tiktok.com/ZM686Q4ER/_`;
+  const gettoken = await axios.get('https://tikdown.org/id');
+  const $ = cheerio.load(gettoken.data);
+  const token = $('#download-form > input[type=hidden]:nth-child(2)').attr( 'value' );
+  const param = {url: url, _token: token};
+  const {data} = await axios.request('https://tikdown.org/getAjax?', {method: 'post', data: new URLSearchParams(Object.entries(param)), headers: {'content-type': 'application/x-www-form-urlencoded; charset=UTF-8', 'user-agent': 'Mozilla/5.0 (Windows NT 6.3; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/100.0.4896.88 Safari/537.36'}});
+  const getdata = cheerio.load(data.html);
+  if (data.status) {
+    return {status: true, thumbnail: getdata('img').attr('src'), video: getdata('div.download-links > div:nth-child(1) > a').attr('href'), audio: getdata('div.download-links > div:nth-child(2) > a').attr('href')};
+  } else {
+    return {status: false};
+  }
 }
