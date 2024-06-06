@@ -4,7 +4,7 @@ import os from 'os';
 
 let limit = 500;
 let handler = async (m, { conn, args, isPrems, isOwner, usedPrefix, command }) => {
-  if (!args || !args[0]) throw `✳️ Example:\n${usedPrefix + command} https://youtube.com/watch?v=GvabaWHngzU`;
+  if (!args || !args[0]) throw `✳️ Example:\n${usedPrefix + command} https://youtube.com/watch?v=CV9SEueeTq4`;
   if (!args[0].match(/youtu/gi)) throw `❎ Verify that the YouTube link`;
 
   let chat = global.db.data.chats[m.chat];
@@ -12,7 +12,7 @@ let handler = async (m, { conn, args, isPrems, isOwner, usedPrefix, command }) =
     const info = await ytdl.getInfo(args[0]);
     const format = ytdl.chooseFormat(info.formats, { quality: 'highest' });
     if (!format) {
-      throw new Error('No valid formats found');
+      throw new Error('لم يتم العثور على رابط');
     }
 
     if (format.contentLength / (1024 * 1024) >= limit) {
@@ -61,7 +61,7 @@ let handler = async (m, { conn, args, isPrems, isOwner, usedPrefix, command }) =
 
 handler.help = ['ytmp4 <yt-link>'];
 handler.tags = ['dl'];
-handler.command = ['ytmp44', 'فيديو'];
+handler.command = ['ف', 'يوتيوب'];
 handler.diamond = false;
 
 export default handler;
