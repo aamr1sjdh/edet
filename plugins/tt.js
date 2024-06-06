@@ -1,35 +1,67 @@
-import fg from 'api-dylux' 
-import { tiktokdl, tiktokdlv2, tiktokdlv3 } from '@bochilteam/scraper'
+import ytdl from 'ytdl-core';
+import fs from 'fs';
+import os from 'os';
 
-let handler = async (m, { conn, text, args, usedPrefix, command}) => {
-if (!args[0]) throw ` أين هو رابط فيديو التكتوك الذي تود تحميله\n\n 📌 مثال : \n${usedPrefix + command} https://vm.tiktok.com/ZMqysVD/?k=1`
-if (!args[0].match(/tiktok/gi)) throw `❎ verify that the link is from tiktok`
+let limit = 500;
+let handler = async (m, { conn, args, isPrems, isOwner, usedPrefix, command }) => {
+  if (!args || !args[0]) throw `✳️ Example:\n${usedPrefix + command} https://youtube.com/watch?v=GvabaWHngzU`;
+  if (!args[0].match(/youtu/gi)) throw `❎ Verify that the YouTube link`;
 
-try {
-    let p = await fg.tiktok(args[0]) 
-    let te = `
-┌─⊷ TIKTOK
-▢ *Username:* ${p.unique_id}
-▢ *Description:* ${p.title}
-▢ *Duration:* ${p.duration}
-└───────────`
-   conn.sendFile(m.chat, p.play, 'tiktok.mp4', te, m)
-    } catch {  	
-	const { author: { nickname }, video, description } = await tiktokdl(args[0])
-         .catch(async _ => await tiktokdlv2(args[0]))
-         .catch(async _ => await tiktokdlv3(args[0]))
-    const url = video.no_watermark2 || video.no_watermark || 'https://tikcdn.net' + video.no_watermark_raw || video.no_watermark_hd
-    if (!url) throw '❎ خطأ في تحميل الفيديو '
-     conn.sendFile(m.chat, url, 'fb.mp4', `
-┌─⊷ *TIKTOK DL*
-▢ *Username:* ${nickname} ${description ? `\n▢ *Description:* ${description}` : ''}
-└───────────`, m)
-} 
-    
-}  
-handler.help = ['tiktok']
-handler.tags = ['dl']
-handler.command = /^(tiktok|تيكتوك|تيك|tiktoknowm)$/i
-handler.diamond = false
+  let chat = global.db.data.chats[m.chat];
+  try {
+    const info = await ytdl.getInfo(args[0]);
+    const format = ytdl.chooseFormat(info.formats, { quality: 'highest' });
+    if (!format) {
+      throw new Error('No valid formats found');
+    }
 
-export default handler
+    if (format.contentLength / (1024 * 1024) >= limit) {
+      return m.reply(`≡ *GURU YTDL*\n\n▢ *⚖️Size*: ${format.contentLength / (1024 * 1024).toFixed(2)}MB\n▢ *🎞️Quality*: ${format.qualityLabel}\n\n▢ The file exceeds the download limit *+${limit} MB*`);
+    }
+
+    const tmpDir = os.tmpdir();
+    const fileName = `${tmpDir}/${info.videoDetails.videoId}.mp4`;
+
+    const writableStream = fs.createWriteStream(fileName);
+    ytdl(args[0], {
+      quality: format.itag,
+    }).pipe(writableStream);
+
+    writableStream.on('finish', () => {
+      conn.sendFile(
+        m.chat,
+        fs.readFileSync(fileName),
+        `${info.videoDetails.videoId}.mp4`,
+        `✼ ••๑⋯❀ Y O U T U B E ❀⋯⋅๑•• ✼
+	  
+	  ❏ Title: ${info.videoDetails.title}
+	  ❐ Duration: ${info.videoDetails.lengthSeconds} seconds
+	  ❑ Views: ${info.videoDetails.viewCount}
+	  ❒ Upload: ${info.videoDetails.publishDate}
+	  ❒ Link: ${args[0]}
+	  
+	  ⊱─━⊱༻●༺⊰━─⊰`,
+        m,
+        false,
+        { asDocument: chat.useDocument }
+      );
+
+      fs.unlinkSync(fileName); // Delete the temporary file
+    });
+
+    writableStream.on('error', (error) => {
+      console.error(error);
+      m.reply('Error while trying to download the video. Please try again.');
+    });
+  } catch (error) {
+    console.error(error);
+    m.reply('Error while trying to process the video. Please try again.');
+  }
+};
+
+handler.help = ['ytmp4 <yt-link>'];
+handler.tags = ['dl'];
+handler.command = ['ytmp44', 'فيديو'];
+handler.diamond = false;
+
+export default handler;
