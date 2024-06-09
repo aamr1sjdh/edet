@@ -1,41 +1,36 @@
-import axios from 'axios';
-import cheerio from 'cheerio';
-let handler = async (m, { conn, text: tiktok, args, command, usedPrefix}) => {
-if (!tiktok) throw '*[❗] Ingresa un enlace de tiktok imagenes, ejemplo: "https://vm.tiktok.com/ZM2cqBRVS/".*';        
-let imagesSent
-if (imagesSent) return;
-imagesSent = true    
-try {   
-let tioShadow = await ttimg(tiktok); 
-let result = tioShadow?.data;
-for (let d of result) {
-  await conn.sendMessage(m.chat, {image: {url: d}}, {quoted: m});
- };
-imagesSent = false
-} catch {
-    imagesSent = false    
-    throw '*[❗] No se obtuvo respuesta de la página, intente más tarde.*'
- }
-};
-handler.command = /^(ttimg|tiktokimg)$/i;
-export default handler;
+import { tiktokdl } from '@bochilteam/scraper';
+import fg from 'api-dylux';
 
-async function ttimg(link) {
-    try {    
-        let url = `https://dlpanda.com/es?url=${link}&token=G7eRpMaa`;    
-        let response = await axios.get(url);
-        const html = response.data;
-        const $ = cheerio.load(html);
-        let imgSrc = [];
-        $('div.col-md-12 > img').each((index, element) => {
-            imgSrc.push($(element).attr('src'));
-        });
-        if (imgSrc.length === 0) {
-            return { data: '*[❗] No se encontraron imágenes en el enlace proporcionado.*' };
-        }
-        return { data: imgSrc }; 
-    } catch (error) {
-        console.lo (error);
-        return { data: '*[❗] No se obtuvo respuesta de la página, intente más tarde.*'};
-    };
+let handler = async (m, { conn, text, args, usedPrefix, command }) => {
+  
+ if (!args[0] && m.quoted && m.quoted.text) {
+  args[0] = m.quoted.text;
+}
+if (!args[0] && !m.quoted) throw `اعطني الرابط \n\nمثال: https://vm.tiktok.com/ZMMPhv9Fb/`;
+ if (!args[0].match(/tiktok/gi)) throw `تأكد من ان الرابط رابط تيك توك`;
+ 
+ 
+  let txt = 'انا لا اتحمل ذنب اغانيك ';
+
+  try {
+    const { author: { nickname }, video, description } = await tiktokdl(args[0]);
+    const url = video.no_watermark2 || video.no_watermark || 'https://tikcdn.net' + video.no_watermark_raw || video.no_watermark_hd;
+    
+    if (!url) throw global.error;
+    
+    conn.sendFile(m.chat, url, 'tiktok.mp4', '', m);
+  } catch (err) {
+    try {
+      let p = await fg.tiktok(args[0]);
+      conn.sendFile(m.chat, p.play, 'tiktok.mp4', txt, m);
+    } catch {
+      m.reply('*An unexpected error occurred*');
+    }
+  }
 };
+
+handler.help = ['tiktok'].map((v) => v + ' <url>');
+handler.tags = ['downloader'];
+handler.command = /^t(t|iktok(d(own(load(er)?)?|l))?|td(own(load(er)?)?|l))|تيك|تيكتوك$/i;
+
+export default handler;
